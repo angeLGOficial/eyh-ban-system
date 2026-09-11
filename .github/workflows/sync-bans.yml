@@ -1,0 +1,66 @@
+name: Sincronizar Baneos MySQL
+
+on:
+  schedule:
+    # Se ejecuta automáticamente cada 5 minutos
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # Permite ejecutarlo manualmente desde GitHub cuando quieras
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Instalar dependencia MySQL
+        run: npm install mysql2
+
+      - name: Ejecutar script de sincronización
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+        run: |
+          node -e '
+          const mysql = require("mysql2/promise");
+          const fs = require("fs");
+
+          async function run() {
+              try {
+                  const connection = await mysql.createConnection({
+                      host: process.env.DB_HOST,
+                      user: process.env.DB_USER,
+                      password: process.env.DB_PASSWORD,
+                      database: process.env.DB_NAME,
+                      port: 3306
+                  });
+
+                  // Consultar los últimos baneos de tu tabla
+                  const [rows] = await connection.execute("SELECT player_name, player_auth, admin_name, ban_reason, ban_duration, ban_date FROM eyh_bans ORDER BY id DESC LIMIT 50");
+                  await connection.end();
+
+                  // Guardarlos en el bans.json que lee tu web
+                  fs.writeFileSync("bans.json", JSON.stringify(rows, null, 2));
+                  console.log("¡Baneos sincronizados con éxito!");
+              } catch (error) {
+                  console.error("Error en la sincronización:", error);
+                  process.exit(1);
+              }
+          }
+          run();
+          '
+
+      - name: Guardar cambios en GitHub de forma automática
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add bans.json
+          git commit -m "Actualización automática de baneos [skip ci]" || exit 0
+          git push
