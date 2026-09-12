@@ -202,7 +202,6 @@
             border: 1px solid rgba(255, 30, 77, 0.3);
         }
 
-        /* Banner de Publicidad / Servicio de Banlist de byLun1tta */
         .promo-banner {
             background: linear-gradient(135deg, rgba(157, 78, 225, 0.15), rgba(255, 30, 77, 0.15));
             border: 1px solid rgba(157, 78, 225, 0.4);
@@ -397,11 +396,11 @@
             }
         }
 
-        // 2. Contador de Visitas Web Real (Cuenta navegantes únicos por sesión sin inventar números falsos)
+        // 2. Contador de Visitas Web Real
         function actualizarVisitasWeb() {
             let visitas = localStorage.getItem('eyh_visitas_real');
             if (!visitas) {
-                visitas = 150; // Base inicial real
+                visitas = 150;
             }
             if (!sessionStorage.getItem('sesion_activa_eyh')) {
                 visitas = parseInt(visitas) + 1;
@@ -412,38 +411,49 @@
         }
         actualizarVisitasWeb();
 
-        // 3. Consultar Estado y Jugadores Conectados en Tiempo Real (Actualización automática cada 10 segundos)
+        // 3. Consultar Estado y Jugadores Conectados en Tiempo Real
         async function actualizarServidorEnVivo() {
-            try {
-                // IP y puerto de tu servidor: 23.26.135.154:27029
-                let response = await fetch('https://api.gametracker.rs/widget/json/23.26.135.154:27029/');
-                let data = await response.json();
-                
-                let dot = document.getElementById('statusDot');
-                let statusText = document.getElementById('serverStatus');
-                let playerCount = document.getElementById('playerCount');
+            let dot = document.getElementById('statusDot');
+            let statusText = document.getElementById('serverStatus');
+            let playerCount = document.getElementById('playerCount');
 
-                if (data && typeof data.players !== 'undefined') {
+            try {
+                let ipServidor = "23.26.135.154:27029";
+                let response = await fetch(`https://api.gametools.rs/cs16/players?server=${ipServidor}`).catch(() => null);
+                
+                if (response && response.ok) {
+                    let data = await response.json();
                     dot.className = "status-dot status-online";
                     statusText.innerText = "En Línea";
-                    playerCount.innerText = data.players + " / " + (data.maxPlayers || 32);
-                } else {
-                    throw new Error("Servidor offline");
+                    playerCount.innerText = (data.players ? data.players.length : 0) + " / 32";
+                    return;
                 }
-            } catch (e) {
-                let dot = document.getElementById('statusDot');
-                let statusText = document.getElementById('serverStatus');
-                let playerCount = document.getElementById('playerCount');
 
+                let responseAlt = await fetch(`https://api.allorigins.win/get?url=` + encodeURIComponent(`https://api.gametracker.rs/widget/json/` + ipServidor));
+                let dataAlt = await responseAlt.json();
+                
+                if (dataAlt && dataAlt.contents) {
+                    let serverData = JSON.parse(dataAlt.contents);
+                    if (serverData && serverData.players !== undefined) {
+                        dot.className = "status-dot status-online";
+                        statusText.innerText = "En Línea";
+                        playerCount.innerText = serverData.players + " / " + (serverData.maxPlayers || 32);
+                        return;
+                    }
+                }
+                
+                throw new Error("Sin respuesta válida");
+
+            } catch (e) {
                 dot.className = "status-dot status-offline";
                 statusText.innerText = "Apagado";
                 playerCount.innerText = "0 / 32";
             }
         }
 
-        // Ejecutar al cargar y refrescar automáticamente cada 10 segundos en tiempo real
+        // Ejecutar al cargar y refrescar automáticamente cada 15 segundos
         actualizarServidorEnVivo();
-        setInterval(actualizarServidorEnVivo, 10000);
+        setInterval(actualizarServidorEnVivo, 15000);
     </script>
 </body>
 </html>
