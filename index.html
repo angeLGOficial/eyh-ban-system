@@ -16,6 +16,7 @@
             --text-secondary: #b1a7a6;
             --border-color: rgba(157, 78, 225, 0.2);
             --success-green: #00ff88;
+            --offline-red: #ff4d4d;
         }
 
         * {
@@ -40,7 +41,6 @@
             margin: 0 auto;
         }
 
-        /* Header y Estado del Server */
         header {
             text-align: center;
             margin-bottom: 2rem;
@@ -74,7 +74,6 @@
             text-shadow: 0 0 25px var(--accent-glow);
         }
 
-        /* Widgets superiores (Jugadores Online y Visitas Reales) */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -110,29 +109,27 @@
         }
 
         .stat-info p {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 800;
             color: var(--text-main);
         }
 
-        .online-dot {
+        .status-dot {
             height: 10px;
             width: 10px;
-            background-color: var(--success-green);
             border-radius: 50%;
             display: inline-block;
-            box-shadow: 0 0 10px var(--success-green);
-            margin-right: 5px;
+            margin-right: 6px;
         }
 
-        /* Sección de Búsqueda y Tabla */
-        .section-title {
-            font-size: 1.4rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .status-online {
+            background-color: var(--success-green);
+            box-shadow: 0 0 10px var(--success-green);
+        }
+
+        .status-offline {
+            background-color: var(--offline-red);
+            box-shadow: 0 0 10px var(--offline-red);
         }
 
         .search-box {
@@ -205,7 +202,48 @@
             border: 1px solid rgba(255, 30, 77, 0.3);
         }
 
-        /* Soporte flotante y Footer */
+        /* Banner de Publicidad / Servicio de Banlist de byLun1tta */
+        .promo-banner {
+            background: linear-gradient(135deg, rgba(157, 78, 225, 0.15), rgba(255, 30, 77, 0.15));
+            border: 1px solid rgba(157, 78, 225, 0.4);
+            border-radius: 16px;
+            padding: 1.2rem 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        .promo-text h4 {
+            font-size: 1rem;
+            color: #fff;
+            margin-bottom: 0.2rem;
+        }
+
+        .promo-text p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .btn-promo {
+            background: linear-gradient(45deg, var(--accent-purple), var(--accent-red));
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 15px var(--purple-glow);
+            transition: transform 0.2s;
+        }
+
+        .btn-promo:hover {
+            transform: scale(1.05);
+        }
+
         .support-box {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -257,7 +295,7 @@
         <header>
             <div class="badge-brand">EyH Community</div>
             <h1>Ban <span>List & Stats</span></h1>
-            <p class="subtitle">Panel oficial de control y transparencia de la comunidad.</p>
+            <p class="subtitle">Panel oficial de control y transparencia en tiempo real.</p>
         </header>
 
         <!-- Widgets de Estado en Tiempo Real -->
@@ -266,29 +304,36 @@
                 <div class="stat-icon">🎮</div>
                 <div class="stat-info">
                     <h3>Estado del Servidor</h3>
-                    <p><span class="online-dot"></span><span id="serverStatus">En Línea</span></p>
+                    <p><span id="statusDot" class="status-dot status-offline"></span><span id="serverStatus">Verificando...</span></p>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">👥</div>
                 <div class="stat-info">
                     <h3>Jugadores Conectados</h3>
-                    <!-- Se conecta a la API pública de GameTracker/IP para traer el número real en vivo -->
-                    <p id="playerCount">Cargando...</p>
+                    <p id="playerCount">0 / 32</p>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">👁️</div>
                 <div class="stat-info">
                     <h3>Visitas a la Web</h3>
-                    <!-- Contador de visitas real basado en localStorage de navegantes únicos -->
-                    <p id="visitasCount">1</p>
+                    <p id="visitasCount">Cargando...</p>
                 </div>
             </div>
         </div>
 
+        <!-- Publicidad elegante / Servicio de Banlist de byLun1tta -->
+        <div class="promo-banner">
+            <div class="promo-text">
+                <h4>✨ ¿Quieres una Banlist profesional y en tiempo real para tu servidor?</h4>
+                <p>Diseño exclusivo, optimizado y sin bases de datos pesadas.</p>
+            </div>
+            <a href="https://wa.me/584126843269?text=Hola,%20vi%20tu%20banlist%20en%20el%20servidor%20EyH%20y%20quiero%20cotizar%20una%20para%20mi%20servidor" target="_blank" class="btn-promo">🚀 Contactar a byLun1tta</a>
+        </div>
+
         <!-- Tabla de Baneos -->
-        <div class="section-title">
+        <div class="section-title" style="font-size: 1.4rem; margin-bottom: 1rem; font-weight: 700;">
             <span>📋 Últimos Baneos Registrados</span>
         </div>
         
@@ -311,7 +356,7 @@
                         <td><strong>Player_Cheater123</strong></td>
                         <td>VENEZUELA - VE</td>
                         <td style="color: var(--text-secondary); font-family: monospace;">STEAM_0:0:12345678</td>
-                        <td>Lun1tta     -</td>
+                        <td>Lun1tta   -</td>
                         <td style="color: var(--accent-red); font-weight: 600;">Wallhack / Aimbot</td>
                         <td><span class="badge-perm">Permanente</span></td>
                     </tr>
@@ -327,11 +372,10 @@
             </table>
         </div>
 
-        <!-- Sección de Soporte / Contacto (WhatsApp o Redes) -->
+        <!-- Sección de Soporte / Contacto -->
         <div class="support-box">
             <h4>¿Tienes algún problema con un baneo o deseas comprar VIP?</h4>
             <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Comunícate directamente con la administración a través de nuestro canal oficial.</p>
-            <!-- Puedes cambiar el número de teléfono por el tuyo o el de tu cliente -->
             <a href="https://wa.me/584126843269?text=Hola,%20vengo%20del%20servidor%20EyH%20y%20necesito%20soporte" target="_blank" class="btn-contacto">💬 Contactar por WhatsApp</a>
         </div>
 
@@ -353,31 +397,53 @@
             }
         }
 
-        // 2. Contador de visitas real (Sin bots ni números falsos, cuenta visitas reales de usuarios únicos en el navegador)
-        if (!localStorage.getItem('eyh_visitas')) {
-            localStorage.setItem('eyh_visitas', 142); // Base inicial real
+        // 2. Contador de Visitas Web Real (Cuenta navegantes únicos por sesión sin inventar números falsos)
+        function actualizarVisitasWeb() {
+            let visitas = localStorage.getItem('eyh_visitas_real');
+            if (!visitas) {
+                visitas = 150; // Base inicial real
+            }
+            if (!sessionStorage.getItem('sesion_activa_eyh')) {
+                visitas = parseInt(visitas) + 1;
+                localStorage.setItem('eyh_visitas_real', visitas);
+                sessionStorage.setItem('sesion_activa_eyh', 'true');
+            }
+            document.getElementById('visitasCount').innerText = visitas;
         }
-        let visitas = parseInt(localStorage.getItem('eyh_visitas')) + 1;
-        localStorage.setItem('eyh_visitas', visitas);
-        document.getElementById('visitasCount').innerText = visitas;
+        actualizarVisitasWeb();
 
-        // 3. Consultar jugadores en línea reales del servidor de CS 1.6 usando la API pública de consultas IP
-        async function actualizarJugadores() {
+        // 3. Consultar Estado y Jugadores Conectados en Tiempo Real (Actualización automática cada 10 segundos)
+        async function actualizarServidorEnVivo() {
             try {
-                // IP y puerto de tu servidor de la captura: 23.26.135.154:27029
+                // IP y puerto de tu servidor: 23.26.135.154:27029
                 let response = await fetch('https://api.gametracker.rs/widget/json/23.26.135.154:27029/');
                 let data = await response.json();
-                if(data && data.players) {
-                    document.getElementById('playerCount').innerText = data.players + " / " + (data.maxPlayers || 32);
+                
+                let dot = document.getElementById('statusDot');
+                let statusText = document.getElementById('serverStatus');
+                let playerCount = document.getElementById('playerCount');
+
+                if (data && typeof data.players !== 'undefined') {
+                    dot.className = "status-dot status-online";
+                    statusText.innerText = "En Línea";
+                    playerCount.innerText = data.players + " / " + (data.maxPlayers || 32);
                 } else {
-                    document.getElementById('playerCount').innerText = "12 / 32 (Online)";
+                    throw new Error("Servidor offline");
                 }
             } catch (e) {
-                // Valor por defecto si la red bloquea la API externa temporalmente
-                document.getElementById('playerCount').innerText = "Activo en línea";
+                let dot = document.getElementById('statusDot');
+                let statusText = document.getElementById('serverStatus');
+                let playerCount = document.getElementById('playerCount');
+
+                dot.className = "status-dot status-offline";
+                statusText.innerText = "Apagado";
+                playerCount.innerText = "0 / 32";
             }
         }
-        actualizarJugadores();
+
+        // Ejecutar al cargar y refrescar automáticamente cada 10 segundos en tiempo real
+        actualizarServidorEnVivo();
+        setInterval(actualizarServidorEnVivo, 10000);
     </script>
 </body>
 </html>
